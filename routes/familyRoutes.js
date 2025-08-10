@@ -24,7 +24,7 @@ familyRouter.post('/create', async (req, res) => {
     if (updateFamily.rows.length === 0) {
         return res.status(400).json({ error: 'Update family id failed'});
     }
-    res.status(201).json({ family: newFamily })
+    res.status(201).json({ family: newFamily.rows[0] })
     
    } catch (error) {
     console.error(error);
