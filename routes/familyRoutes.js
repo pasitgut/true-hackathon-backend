@@ -130,7 +130,10 @@ familyRouter.post('/my-family', async (req, res) => {
         
         const existingFamily = await pool.query(`
             SELECT family_id FROM users WHERE user_id = $1`, [user_id]);
-
+        
+        if (existingFamily.rows[0].family_id == null) {
+            return res.status(400).json({ error: "User haven't family"});
+        }
         const familes = await pool.query(`SELECT * FROM users WHERE family_id = $1`, [existingFamily.rows[0].family_id]);
         
         if (familes.rows.length === 0) {
@@ -154,8 +157,8 @@ familyRouter.post('/block-website', async (req, res) => {
 })
 
 
-familyRouter.get('/block-website', async (req, res) => {
-    const { family_id } = req.body;
+familyRouter.get('/block-website/:family_id', async (req, res) => {
+    const family_id = req.params.family_id;
     const result = await pool.query('SELECT * FROM blacklist WHERE family_id = $1', [family_id]);
     if (result.rows.length === 0) {
         return res.status(400).json({ error: 'Blacklist not found'});

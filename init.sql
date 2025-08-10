@@ -3,7 +3,7 @@ CREATE TABLE if not exists users (
     username VARCHAR(100),
     email VARCHAR(255),
     password VARCHAR(255),
-    phone VARCHAR(10),
+    phone VARCHAR(10) UNIQUE,
     family_id INT,
     create_at TIMESTAMP DEFAULT NOW(),
     avatar_url VARCHAR(255)

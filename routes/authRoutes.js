@@ -7,9 +7,9 @@ const authRouter = express.Router();
 
 authRouter.post('/register', async (req, res) => {
     try {
-        const { username, email, phone, password } = req.body;
+        const { username, phone, password } = req.body;
 
-        const existingUser = await pool.query('SELECT user_id FROM users WHERE email = $1', [email]);
+        const existingUser = await pool.query('SELECT user_id FROM users WHERE phone = $1', [phone]);
         console.log(existingUser);
         if (existingUser.rows.length > 0) {
             return res.status(400).json({ error: 'User already exists'});
@@ -18,7 +18,7 @@ authRouter.post('/register', async (req, res) => {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        const newUser = await pool.query('INSERT INTO users (username, email, phone, password) VALUES ($1, $2, $3, $4) RETURNING *', [username, email, phone, hashedPassword]);
+        const newUser = await pool.query('INSERT INTO users (username, phone, password) VALUES ($1, $2, $3) RETURNING *', [username, phone, hashedPassword]);
         console.log('New Usere', newUser);
         const token = jwt.sign(
             { id: newUser.rows[0].user_id},
@@ -38,9 +38,9 @@ authRouter.post('/register', async (req, res) => {
 
 authRouter.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { phone, password } = req.body;
 
-        const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        const user = await pool.query('SELECT * FROM users WHERE phone = $1', [phone]);
         if (user.rows[0].length === 0) {
             return res.status(400).json({ error: 'Invalid credentials'});
         }
